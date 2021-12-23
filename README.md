@@ -1,2 +1,2 @@
 # optee-qemu
-Environment with vulnerable kernel for exploitiation of CVE-2021-44733
+Environment with vulnerable kernel for exploitation of CVE-2021-44733
