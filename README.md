@@ -433,7 +433,7 @@ PAN (Privileged Access Never) mitigates this as fake objects must be referenced 
 
 Also, in order to perform a successful reallocation of the free'd shm object, the IOCTL call `TEE_IOC_OPEN_SESSION` or `TEE_IOC_INVOKE` must be preemted by a thread performing the file descriptor close and heap spraying thread that fills the kmalloc-64 cache. For this to work the kernel must be configured with `CONFIG_PREEMPT`. In this PoC the heap spray from Nicolas Fabretti's blog post [7] was utilized based on blocking `sendmsg()`. 
 
-To summarize, the issue in regards to exploitation is that both the free and UAF must occur within the same system call. In addition to this, freeing is hard to trigger as it is requires racing within the syscall. After freeing, the time between it and the actual UAF is a small time window where a heap spray must be performed to reallocate the free'd object. Further, the shm object is being destroyed so we need to rely on overwriting some function pointer in the `file_operations` structure. The following Figure shows the threads involved in the exploit code and their role.
+To summarize, the issue in regards to exploitation is that both the free and UAF must occur within the same system call. In addition to this, freeing is hard to trigger as it is requires racing within the syscall. After freeing, the time between it and the actual UAF is a small time window where a heap spray must be performed to reallocate the free'd object. The following Figure shows the threads involved in the exploit code and their role.
 
 
 <p align="center">
