@@ -437,7 +437,7 @@ To summarize, the issue in regards to exploitation is that both the free and UAF
 
 
 <p align="center">
-  <img src="https://github.com/pjlantz/pjlantz.github.io/raw/master/docs/assets/Threads.png?raw=true" alt="Threads involved" width="60%" height="60%"/>
+  <img src="https://github.com/pjlantz/pjlantz.github.io/raw/master/docs/assets/Threads.png?raw=true" alt="Threads involved" width="50%" height="50%"/>
        <br /><em>Figure 3: Threads involved in the exploit code</em>
 </p>
 
