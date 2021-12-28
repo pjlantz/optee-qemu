@@ -12,7 +12,7 @@ The secure world contains the trusted OS denoted OP-TEE OS [4]. On top of this O
 
 <p align="center">
   <img src="https://github.com/pjlantz/pjlantz.github.io/raw/master/docs/assets/overview.png?raw=true" alt="TEE overview" width="50%" height="50%"/>
-      <br /><em>Figure 1: Overview of TEE - from Linaros presentation [5]</em>
+      <br /><em>Figure 1: Overview of TEE - from Linaro's presentation [5]</em>
 </p>
 
 The normal world (Linux userspace/kernel) can interact with these applications using client applications (CAs) and the API exposed by the TEE subsystem. A CA can open a session towards a specific TA and invoke functions that the TA implements. Passing of any arguments back and forth between the TA and CA is done using shared memory.
@@ -30,13 +30,13 @@ The interaction between a CA and TA using all relevant syscalls is described nex
 
 <p align="center">
   <img src="https://github.com/pjlantz/pjlantz.github.io/raw/master/docs/assets/overview2.png?raw=true" alt="Session between CA and TA" width="50%" height="50%"/>
-      <br /><em>Figure 2: Session between CA and TA - from Linaros presentation [5]</em>
+      <br /><em>Figure 2: Session between CA and TA - from Linaro's presentation [5]</em>
 </p>
 
 Much of the communication between clients and the TEE is opaque to the driver. The main job for the driver is to manage the context, receive requests from the clients, forward them to the TEE and send back the results [2].
 
 ## Fuzzing of the TEE driver
-CVE-2021-44733 was discovered using fuzzing with syzkaller. The description file used for this is provided below. Note that `ioctl$TEE_SHM_REGISTER_FD` is only part of Linaros (maintainers) kernel tree and not in upstream. The environment provided in 'Setting up the environment' could be used for fuzzing if configured properly according to syzkaller documentation [6]
+CVE-2021-44733 was discovered using fuzzing with syzkaller. The description file used for this is provided below. Note that `ioctl$TEE_SHM_REGISTER_FD` is only part of Linaro (maintainers) kernel tree and not in upstream. The environment provided in 'Setting up the environment' could be used for fuzzing if configured properly according to syzkaller documentation [6]
 
 ```
 #include <uapi/linux/tee.h>
@@ -350,7 +350,7 @@ This vulnerability was discovered by fuzzing the TEE driver without any session 
 ## Root cause analysis
 The conclusion is a design issue with the lifetime tracking of a `tee_shm:dmabuf` object. The driver is designed to let userspace keep the one-and-only reference count after a call to `tee_ioctl_shm_alloc()`.
 
-It is assumed that if the object still is found the driver’s IDR object, then the reference to the dmabuf is still valid and its reference count can be incremented. It turns out this is only partially true. The dmabuf memory is still owned by the dmabuf driver, but it may be in the process of being destroyed and that cannot be stopped by making the reference count non-zero again.
+It is assumed that if the object still is found in the driver’s IDR object, then the reference to the dmabuf is still valid and its reference count can be incremented. It turns out this is only partially true. The dmabuf memory is still owned by the dmabuf driver, but it may be in the process of being destroyed and that cannot be stopped by making the reference count non-zero again.
 
 The scenario that triggers the problem is a multi-threaded application where one thread closes the dmabuf file-descriptor at the same time that another thread makes a call to the IOCTL command `TEE_IOC_OPEN_SESSION` or `TEE_IOC_INVOKE` referencing that shared memory.
 
@@ -421,7 +421,7 @@ void tee_shm_put(struct tee_shm *shm)
 }
 EXPORT_SYMBOL_GPL(tee_shm_put);
 ```
-The shm object could be reallocated before the UAF as it belongs to the kmalloc-64 cache. It would have to be reallocated with:
+The `tee_shm` object could be reallocated before the UAF as it belongs to the kmalloc-64 cache. It would have to be reallocated with:
 
 1. fake `tee_shm`, `tee_shm:dmabuf`, `dma_buf:file` objects 
 2. set `file->f_count = 1`
