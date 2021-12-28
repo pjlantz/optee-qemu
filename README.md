@@ -407,7 +407,7 @@ struct tee_shm *tee_shm_get_from_id(struct tee_context *ctx, int id)
 ```
 
 ## Exploiting the UAF
-In order to exploit this, a reallocation must be made after the object has been free'd and before triggering the UAF. After the call to `tee_shm_get_from_id()`, the function `tee_shm_put()` (for which the second UAF crash from syzkaller occurs) is called which dereferences the tee_shm:dmabuf object used as input argument to `dma_buf_put()`.
+In order to exploit this, a reallocation must be made after the object has been free'd and before triggering the UAF. After the call to `tee_shm_get_from_id()`, the function `tee_shm_put()` (for which the second UAF crash from syzkaller occurs) is called which dereferences the `tee_shm:dmabuf` object used as input argument to `dma_buf_put()`.
 
 ```
 /**
