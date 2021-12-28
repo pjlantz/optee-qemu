@@ -465,7 +465,7 @@ until optee_exploit | grep "0x22000000" /var/log/messages; do sleep 0.01; done
 
 This will stop due to Privileged execute-never (PXN) blocking the execution at `PC=0x22000000`. From here on, exploitation strategies can vary depending on the kernel version, but it might be possible to execute a kernel ROP and do stack pivoting, or make vDSO area writable and place the payload there. It might also be interesting for future work to investigate whether PAN can be bypassed using ret2dir and some physmap spraying. PAN can be enabled in the kernel by setting `CONFIG_CPU_SW_DOMAIN_PAN=y` in `linux/.config`. On real hardware, it is enabled by default on ARMv8.1 and AArch64, for ARMv7 and AArch32 it is possible to have software emulated PAN using this setting [8]. 
 
-**Note**: This exploit is not very well optimized and may occasionally hang the driver if it manage to free the shm object too early, in this case PC will be at `tee_shm_get_from_id()`. If this happens, issue a `system_reset` in the QEMU console to reboot the environment.
+**Note**: This exploit is not very well optimized and may occasionally hang the driver if it manage to free the shared memory object too early, in this case PC will be at `tee_shm_get_from_id()`. If this happens, issue a `system_reset` in the QEMU console to reboot the environment.
 
 ## Acknowledgments
 Thanks to Lars Persson at Axis Communications for help with the root cause analysis and Jens Wiklander at Linaro and maintainer of the TEE subsystem for a smooth communication and quick resolving of this issue [9].
